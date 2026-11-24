@@ -73,7 +73,7 @@ export class App implements OnInit {
       },
       error: () => {
         this.erro.set(
-          'Não foi possível carregar os produtos. Verifique se o json-server está rodando (npm run server).',
+          'Não foi possível carregar os produtos. Verifique se o backend Java está rodando (http://localhost:8080/products).',
         );
         this.carregando.set(false);
       },
