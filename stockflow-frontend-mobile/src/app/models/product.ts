@@ -5,4 +5,5 @@ export interface Product {
   category: string;
   quantity: number;
   minStock: number;
+  lowStock: boolean;
 }
