@@ -7,8 +7,11 @@ import {
   Text,
   View,
 } from "react-native";
+import StockMovementModal, {
+  StockMovementType,
+} from "../components/StockMovementModal";
 import { Product } from "./models/product";
-import { getProductById } from "./services/productService";
+import { getProductById, moveProductStock } from "./services/productService";
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -16,6 +19,8 @@ export default function DetailsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     let isActive = true;
@@ -54,24 +59,18 @@ export default function DetailsScreen() {
       isActive = false;
     };
   }, [id, retryCount]);
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import StockMovementModal, {
-  StockMovementType,
-} from "../components/StockMovementModal";
 
-export default function DetailsScreen() {
-  const { id } = useLocalSearchParams<{ id?: string }>();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [productQuantity, setProductQuantity] = useState(10);
-  const [successMessage, setSuccessMessage] = useState("");
+  async function handleSaveMovement(type: StockMovementType, amount: number) {
+    if (!product) {
+      return;
+    }
 
-  function handleSaveMovement(type: StockMovementType, amount: number) {
-    setProductQuantity((currentQuantity) =>
-      type === "ENTRADA"
-        ? currentQuantity + amount
-        : currentQuantity - amount,
-    );
+    const updatedProduct = await moveProductStock(product.id, {
+      tipo: type,
+      quantidade: amount,
+    });
+
+    setProduct(updatedProduct);
     setSuccessMessage("Movimentação de estoque salva com sucesso.");
   }
 
@@ -102,71 +101,60 @@ export default function DetailsScreen() {
             </Pressable>
           </View>
         ) : product ? (
-          <View style={styles.detailsCard}>
-            <View style={styles.detailField}>
-              <Text style={styles.label}>ID</Text>
-              <Text style={styles.value}>{product.id}</Text>
-            </View>
-            <View style={styles.detailField}>
-              <Text style={styles.label}>Nome</Text>
-              <Text style={styles.value}>{product.name}</Text>
-            </View>
-            <View style={styles.detailField}>
-              <Text style={styles.label}>Descrição</Text>
-              <Text style={styles.value}>
-                {product.description || "Sem descrição"}
+          <>
+            <View style={styles.detailsCard}>
+              <View style={styles.detailField}>
+                <Text style={styles.label}>ID</Text>
+                <Text style={styles.value}>{product.id}</Text>
+              </View>
+              <View style={styles.detailField}>
+                <Text style={styles.label}>Nome</Text>
+                <Text style={styles.value}>{product.name}</Text>
+              </View>
+              <View style={styles.detailField}>
+                <Text style={styles.label}>Descrição</Text>
+                <Text style={styles.value}>
+                  {product.description || "Sem descrição"}
+                </Text>
+              </View>
+              <View style={styles.detailField}>
+                <Text style={styles.label}>Categoria</Text>
+                <Text style={styles.value}>{product.category}</Text>
+              </View>
+              <View style={styles.detailField}>
+                <Text style={styles.label}>Quantidade</Text>
+                <Text style={styles.value}>{product.quantity} unidades</Text>
+              </View>
+              <View style={styles.detailField}>
+                <Text style={styles.label}>Estoque mínimo</Text>
+                <Text style={styles.value}>{product.minStock} unidades</Text>
+              </View>
+              <Text
+                style={[
+                  styles.stockStatus,
+                  product.lowStock ? styles.lowStock : styles.stockAvailable,
+                ]}
+              >
+                {product.lowStock ? "Estoque baixo" : "Estoque adequado"}
               </Text>
             </View>
-            <View style={styles.detailField}>
-              <Text style={styles.label}>Categoria</Text>
-              <Text style={styles.value}>{product.category}</Text>
-            </View>
-            <View style={styles.detailField}>
-              <Text style={styles.label}>Quantidade</Text>
-              <Text style={styles.value}>{product.quantity} unidades</Text>
-            </View>
-            <View style={styles.detailField}>
-              <Text style={styles.label}>Estoque mínimo</Text>
-              <Text style={styles.value}>{product.minStock} unidades</Text>
-            </View>
-            <Text
-              style={[
-                styles.stockStatus,
-                product.lowStock ? styles.lowStock : styles.stockAvailable,
-              ]}
-            >
-              {product.lowStock ? "Estoque baixo" : "Estoque adequado"}
-            </Text>
-          </View>
-        ) : null}
-          <View style={styles.detailField}>
-            <Text style={styles.label}>Categoria</Text>
-            <Text style={styles.value}>Papelaria</Text>
-          </View>
-          <View style={styles.detailField}>
-            <Text style={styles.label}>Quantidade</Text>
-            <Text style={styles.value}>{productQuantity} unidades</Text>
-          </View>
-          <View style={styles.detailField}>
-            <Text style={styles.label}>Estoque mínimo</Text>
-            <Text style={styles.value}>3 unidades</Text>
-          </View>
-        </View>
 
-        <Pressable
-          style={styles.button}
-          onPress={() => {
-            setSuccessMessage("");
-            setModalVisible(true);
-          }}
-        >
-          <Text style={styles.buttonText}>Estoque</Text>
-        </Pressable>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                setSuccessMessage("");
+                setModalVisible(true);
+              }}
+            >
+              <Text style={styles.buttonText}>Estoque</Text>
+            </Pressable>
+          </>
+        ) : null}
       </View>
 
       <StockMovementModal
         visible={modalVisible}
-        currentStock={productQuantity}
+        currentStock={product?.quantity ?? 0}
         onClose={() => setModalVisible(false)}
         onSave={handleSaveMovement}
       />

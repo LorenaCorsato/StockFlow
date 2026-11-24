@@ -14,7 +14,25 @@ export async function getProducts(): Promise<Product[]> {
   return response.data;
 }
 
+export type StockMovementType = "ENTRADA" | "SAIDA";
+
+export interface StockMovementPayload {
+  tipo: StockMovementType;
+  quantidade: number;
+}
+
 export async function getProductById(id: number): Promise<Product> {
   const response = await api.get<Product>(`/api/products/${id}`);
+  return response.data;
+}
+
+export async function moveProductStock(
+  id: number,
+  payload: StockMovementPayload,
+): Promise<Product> {
+  const response = await api.patch<Product>(
+    `/api/products/${id}/movement`,
+    payload,
+  );
   return response.data;
 }
