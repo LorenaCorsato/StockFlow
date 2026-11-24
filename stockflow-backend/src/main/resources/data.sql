@@ -1,0 +1,29 @@
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Caneta Azul', 'Caneta esferográfica azul 1.0 mm', 'Papelaria', 50, 10);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Lápis HB', 'Lápis preto para escrita', 'Papelaria', 30, 10);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Borracha Branca', 'Borracha escolar macia', 'Papelaria', 5, 10);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Mouse USB', 'Mouse óptico com fio', 'Informática', 15, 5);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Teclado USB', 'Teclado padrão ABNT2', 'Informática', 3, 3);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Pen Drive 32GB', 'Dispositivo de armazenamento USB', 'Informática', 0, 5);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Grampeador', 'Grampeador de mesa', 'Escritório', 12, 4);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Papel A4', 'Pacote com 500 folhas', 'Escritório', 25, 10);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Pasta Organizadora', 'Pasta plástica para documentos', 'Escritório', 2, 5);
+
+INSERT INTO TBL_PRODUCT (NAME, DESCRIPTION, CATEGORY, QUANTITY, MIN_STOCK)
+VALUES ('Calculadora', NULL, 'Eletrônicos', 8, 3);
