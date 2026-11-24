@@ -16,6 +16,7 @@ import com.fatec.itu.stockflow_backend.dtos.ProductRequest;
 import com.fatec.itu.stockflow_backend.dtos.ProductResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fatec.itu.stockflow_backend.services.ProductService;
@@ -62,5 +63,12 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+     @PutMapping("{id}")
+    public ResponseEntity<Void> update(@PathVariable long id,
+                                       @Valid @RequestBody ProductRequest product)
+    {
+            service.update(product, id);
+            return ResponseEntity.noContent().build();
+    }
     
 }
