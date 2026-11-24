@@ -1,0 +1,26 @@
+@if (visivel) {
+  <div
+    class="toast-inferior"
+    [class.toast-sucesso]="tipo === 'sucesso'"
+    [class.toast-erro]="tipo === 'erro'"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="toast-icone" aria-hidden="true">
+      @if (tipo === 'sucesso') {
+        <i class="bi bi-check-circle-fill"></i>
+      } @else {
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      }
+    </span>
+    <span class="toast-texto">{{ mensagem }}</span>
+    <button
+      type="button"
+      class="toast-fechar"
+      (click)="fechar.emit()"
+      aria-label="Fechar notificação"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+}

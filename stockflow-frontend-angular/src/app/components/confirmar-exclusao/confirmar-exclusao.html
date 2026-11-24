@@ -1,0 +1,61 @@
+@if (aberto) {
+  <div
+    class="modal-overlay"
+    (click)="aoCancelar()"
+    (keydown)="aoTeclar($event)"
+    tabindex="0"
+    role="presentation"
+  ></div>
+
+  <div
+    class="modal-central"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="excluir-titulo"
+    aria-describedby="excluir-descricao"
+    (keydown)="aoTeclar($event)"
+    tabindex="-1"
+  >
+    <div class="modal-card">
+      <header class="modal-header-custom">
+        <span class="modal-icone" aria-hidden="true">
+          <i class="bi bi-trash"></i>
+        </span>
+        <h2 id="excluir-titulo" class="h5 mb-0">Excluir produto?</h2>
+      </header>
+
+      <p id="excluir-descricao" class="text-muted mb-0">
+        Tem certeza que deseja excluir
+        <strong class="text-dark">"{{ produto?.nome }}"</strong>
+        @if (produto?.categoria) {
+          <span>({{ produto?.categoria }})</span>
+        }
+        do estoque? Essa ação não pode ser desfeita.
+      </p>
+
+      <footer class="modal-acoes">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="aoCancelar()"
+          [disabled]="excluindo"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmar.emit()"
+          [disabled]="excluindo"
+        >
+          @if (excluindo) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Excluindo...
+          } @else {
+            <i class="bi bi-trash me-1"></i>Excluir
+          }
+        </button>
+      </footer>
+    </div>
+  </div>
+}
