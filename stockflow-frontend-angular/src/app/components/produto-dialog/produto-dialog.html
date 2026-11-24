@@ -70,6 +70,22 @@
       </div>
 
       <div>
+        <label class="form-label" for="pd-descricao">Descrição <span class="text-muted">(opcional)</span></label>
+        <textarea
+          id="pd-descricao"
+          class="form-control"
+          formControlName="descricao"
+          rows="2"
+          placeholder="Ex.: Caderno universitário 96 folhas"
+          autocomplete="off"
+          [class.is-invalid]="campoInvalido('descricao')"
+        ></textarea>
+        @if (campoInvalido('descricao')) {
+          <div class="invalid-feedback d-block">Máximo de 500 caracteres.</div>
+        }
+      </div>
+
+      <div>
         <label class="form-label" for="pd-categoria">Categoria *</label>
         <input
           id="pd-categoria"

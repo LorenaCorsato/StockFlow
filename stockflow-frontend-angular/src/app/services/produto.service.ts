@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Produto } from '../models/produto';
 
-/** Formato exato devolvido pelo backend Java (GET /products). */
+/** Formato exato devolvido pelo backend Java (GET /api/products). */
 export interface ProdutoBackend {
   id: number;
   name: string;
@@ -13,10 +13,11 @@ export interface ProdutoBackend {
   minStock: number;
 }
 
-// Listagem integrada ao backend Java (Spring Boot -> http://localhost:8080/products).
+// Integrado ao backend Java via proxy de dev (same-origin -> http://localhost:8080/api/products).
+// O baseUrl relativo evita CORS no `ng serve`: o dev-server repassa /api ao backend.
 @Injectable({ providedIn: 'root' })
 export class ProdutoService {
-  private readonly baseUrl = 'http://localhost:8080/products';
+  private readonly baseUrl = '/api/products';
 
   constructor(private http: HttpClient) {}
 
