@@ -1,12 +1,21 @@
+import { useLocalSearchParams } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function DetailsScreen() {
+  const { id } = useLocalSearchParams<{ id?: string }>();
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Detalhes do produto</Text>
 
       <View style={styles.content}>
         <View style={styles.detailsCard}>
+          {id ? (
+            <View style={styles.detailField}>
+              <Text style={styles.label}>ID</Text>
+              <Text style={styles.value}>{id}</Text>
+            </View>
+          ) : null}
           <View style={styles.detailField}>
             <Text style={styles.label}>Nome</Text>
             <Text style={styles.value}>Caderno universitário</Text>
