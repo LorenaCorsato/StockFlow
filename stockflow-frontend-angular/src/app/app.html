@@ -130,3 +130,18 @@
   (fechar)="fecharDialogo()"
   (salvar)="salvarDialogo($event)"
 />
+
+<app-confirmar-exclusao
+  [aberto]="modalExclusaoAberto()"
+  [produto]="produtoParaExcluir()"
+  [excluindo]="excluindo()"
+  (cancelar)="cancelarExclusao()"
+  (confirmar)="confirmarExclusao()"
+/>
+
+<app-toast
+  [visivel]="toastVisivel()"
+  [mensagem]="toastMensagem()"
+  [tipo]="toastTipo()"
+  (fechar)="fecharToast()"
+/>

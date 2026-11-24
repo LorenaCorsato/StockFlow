@@ -47,14 +47,6 @@
       "quantidade": 18,
       "estoqueMinimo": 9,
       "preco": 2
-    },
-    {
-      "nome": "Radio",
-      "categoria": "Eletrônico",
-      "quantidade": 200,
-      "estoqueMinimo": 10,
-      "preco": 15,
-      "id": "FPqfbDxtRuY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

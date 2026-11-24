@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Produto } from './models/produto';
 import { ProdutoService } from './services/produto.service';
 import { ProdutoDialog } from './components/produto-dialog/produto-dialog';
+import { ConfirmarExclusao } from './components/confirmar-exclusao/confirmar-exclusao';
+import { Toast, ToastTipo } from './components/toast/toast';
 
 @Component({
-  imports: [CommonModule, FormsModule, ProdutoDialog],
+  imports: [CommonModule, FormsModule, ProdutoDialog, ConfirmarExclusao, Toast],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -25,6 +27,15 @@ export class App implements OnInit {
   produtoEmEdicao = signal<Produto | null>(null);
   salvandoDialogo = signal(false);
   erroDialogo = signal<string | null>(null);
+
+  // Estado do modal de exclusão + toast inferior central.
+  modalExclusaoAberto = signal(false);
+  produtoParaExcluir = signal<Produto | null>(null);
+  excluindo = signal(false);
+  toastVisivel = signal(false);
+  toastMensagem = signal('');
+  toastTipo = signal<ToastTipo>('sucesso');
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** Sem conexão com o banco/API: bloqueia o botão Adicionar/Salvar. */
   apiIndisponivel = computed(() => this.erro() !== null);
@@ -127,12 +138,52 @@ export class App implements OnInit {
   }
 
   excluir(p: Produto): void {
-    if (p.id == null) return;
-    if (!window.confirm(`Excluir "${p.nome}" do estoque?`)) return;
-    this.produtoService.excluir(p.id).subscribe({
-      next: () => this.carregar(),
-      error: () =>
-        this.erro.set('Não foi possível excluir o produto. Tente novamente.'),
+    this.produtoParaExcluir.set({ ...p });
+    this.modalExclusaoAberto.set(true);
+  }
+
+  cancelarExclusao(): void {
+    if (this.excluindo()) return;
+    this.modalExclusaoAberto.set(false);
+    this.produtoParaExcluir.set(null);
+  }
+
+  confirmarExclusao(): void {
+    const alvo = this.produtoParaExcluir();
+    if (alvo?.id == null || this.excluindo()) return;
+    const id = alvo.id;
+    const nome = alvo.nome;
+    this.excluindo.set(true);
+    this.produtoService.excluir(id).subscribe({
+      next: () => {
+        this.excluindo.set(false);
+        this.modalExclusaoAberto.set(false);
+        this.produtoParaExcluir.set(null);
+        // Remove da lista imediatamente, sem re-fetch.
+        this.produtos.update((lista) => lista.filter((item) => item.id !== id));
+        this.mostrarToast(`"${nome}" removido do estoque.`, 'sucesso');
+      },
+      error: () => {
+        this.excluindo.set(false);
+        this.modalExclusaoAberto.set(false);
+        this.mostrarToast('Não foi possível excluir o produto. Tente novamente.', 'erro');
+      },
     });
+  }
+
+  fecharToast(): void {
+    this.toastVisivel.set(false);
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+      this.toastTimer = null;
+    }
+  }
+
+  private mostrarToast(mensagem: string, tipo: ToastTipo): void {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastMensagem.set(mensagem);
+    this.toastTipo.set(tipo);
+    this.toastVisivel.set(true);
+    this.toastTimer = setTimeout(() => this.toastVisivel.set(false), 3500);
   }
 }
