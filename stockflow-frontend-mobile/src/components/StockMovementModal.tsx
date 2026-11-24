@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import {
   Pressable,
@@ -13,7 +14,10 @@ type StockMovementModalProps = {
   visible: boolean;
   currentStock: number;
   onClose: () => void;
-  onSave: (movementType: StockMovementType, quantity: number) => void;
+  onSave: (
+    movementType: StockMovementType,
+    quantity: number,
+  ) => Promise<void> | void;
 };
 
 export default function StockMovementModal({
@@ -26,12 +30,17 @@ export default function StockMovementModal({
     useState<StockMovementType>("ENTRADA");
   const [quantity, setQuantity] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!visible) {
     return null;
   }
 
-  function handleSave() {
+  async function handleSave() {
+    if (isSaving) {
+      return;
+    }
+
     const amount = Number(quantity);
 
     if (!/^\d+$/.test(quantity) || !Number.isSafeInteger(amount) || amount <= 0) {
@@ -44,11 +53,34 @@ export default function StockMovementModal({
       return;
     }
 
-    onSave(movementType, amount);
-    setQuantity("");
+    setIsSaving(true);
     setErrorMessage("");
-    setMovementType("ENTRADA");
-    onClose();
+
+    try {
+      await onSave(movementType, amount);
+      setQuantity("");
+      setErrorMessage("");
+      setMovementType("ENTRADA");
+      onClose();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const data = error.response?.data as
+          | { message?: string; error?: string }
+          | string
+          | undefined;
+        const apiMessage =
+          typeof data === "string"
+            ? data
+            : data?.message || data?.error;
+        setErrorMessage(
+          apiMessage || "Não foi possível salvar a movimentação.",
+        );
+      } else {
+        setErrorMessage("Não foi possível salvar a movimentação.");
+      }
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -129,6 +161,7 @@ export default function StockMovementModal({
         <View style={styles.actions}>
           <Pressable
             accessibilityRole="button"
+            disabled={isSaving}
             style={[styles.actionButton, styles.cancelButton]}
             onPress={onClose}
           >
@@ -136,10 +169,13 @@ export default function StockMovementModal({
           </Pressable>
           <Pressable
             accessibilityRole="button"
+            disabled={isSaving}
             style={[styles.actionButton, styles.saveButton]}
             onPress={handleSave}
           >
-            <Text style={styles.actionButtonText}>Salvar</Text>
+            <Text style={styles.actionButtonText}>
+              {isSaving ? "Salvando..." : "Salvar"}
+            </Text>
           </Pressable>
         </View>
       </View>
