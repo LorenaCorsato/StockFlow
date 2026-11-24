@@ -1,0 +1,170 @@
+@if (aberto) {
+  <div
+    class="drawer-overlay"
+    (click)="aoFechar()"
+    (keydown)="aoTeclar($event)"
+    tabindex="0"
+    role="presentation"
+    aria-hidden="true"
+  ></div>
+
+  <aside
+    class="drawer"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="titulo()"
+    (keydown)="aoTeclar($event)"
+    tabindex="-1"
+  >
+    <header class="drawer-header">
+      <div>
+        <h2 class="h5 mb-1">{{ titulo() }}</h2>
+        <p class="text-muted small mb-0">
+          @if (produto?.id != null) {
+            Editando produto #{{ produto!.id }}
+          } @else {
+            Preencha todos os campos obrigatórios (*) para liberar o botão.
+          }
+        </p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        (click)="aoFechar()"
+        [disabled]="salvando"
+        aria-label="Fechar diálogo"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    @if (apiIndisponivel) {
+      <div class="alert alert-warning mx-3 mt-3 mb-0" role="alert">
+        <i class="bi bi-wifi-off me-1"></i>
+        Banco de dados/conexão indisponível. O botão
+        <strong>{{ rotuloBotao() | lowercase }}</strong> está bloqueado até a conexão voltar.
+      </div>
+    }
+
+    @if (erroServidor) {
+      <div class="alert alert-danger mx-3 mt-3 mb-0" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ erroServidor }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="aoConfirmar()" class="drawer-body" novalidate>
+      <div>
+        <label class="form-label" for="pd-nome">Nome *</label>
+        <input
+          id="pd-nome"
+          type="text"
+          class="form-control"
+          formControlName="nome"
+          placeholder="Ex.: Caderno"
+          autocomplete="off"
+          [class.is-invalid]="campoInvalido('nome')"
+        />
+        @if (campoInvalido('nome')) {
+          <div class="invalid-feedback d-block">Informe o nome do produto.</div>
+        }
+      </div>
+
+      <div>
+        <label class="form-label" for="pd-descricao">Descrição <span class="text-muted">(opcional)</span></label>
+        <textarea
+          id="pd-descricao"
+          class="form-control"
+          formControlName="descricao"
+          rows="2"
+          placeholder="Ex.: Caderno universitário 96 folhas"
+          autocomplete="off"
+          [class.is-invalid]="campoInvalido('descricao')"
+        ></textarea>
+        @if (campoInvalido('descricao')) {
+          <div class="invalid-feedback d-block">Máximo de 500 caracteres.</div>
+        }
+      </div>
+
+      <div>
+        <label class="form-label" for="pd-categoria">Categoria *</label>
+        <input
+          id="pd-categoria"
+          type="text"
+          class="form-control"
+          formControlName="categoria"
+          placeholder="Ex.: Papelaria"
+          autocomplete="off"
+          [class.is-invalid]="campoInvalido('categoria')"
+        />
+        @if (campoInvalido('categoria')) {
+          <div class="invalid-feedback d-block">Informe a categoria.</div>
+        }
+      </div>
+
+      <div class="row g-2">
+        <div class="col-6">
+          <label class="form-label" for="pd-qtd">Quantidade *</label>
+          <input
+            id="pd-qtd"
+            type="number"
+            class="form-control"
+            formControlName="quantidade"
+            min="0"
+            step="1"
+            placeholder="0"
+            [class.is-invalid]="campoInvalido('quantidade')"
+          />
+          @if (campoInvalido('quantidade')) {
+            <div class="invalid-feedback d-block">Inteiro ≥ 0.</div>
+          }
+        </div>
+        <div class="col-6">
+          <label class="form-label" for="pd-min">Estoque mínimo *</label>
+          <input
+            id="pd-min"
+            type="number"
+            class="form-control"
+            formControlName="estoqueMinimo"
+            min="0"
+            step="1"
+            placeholder="0"
+            [class.is-invalid]="campoInvalido('estoqueMinimo')"
+          />
+          @if (campoInvalido('estoqueMinimo')) {
+            <div class="invalid-feedback d-block">Inteiro ≥ 0.</div>
+          }
+        </div>
+      </div>
+
+      <footer class="drawer-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="aoFechar()"
+          [disabled]="salvando"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="!podeConfirmar()"
+          [title]="
+            apiIndisponivel
+              ? 'Bloqueado: sem conexão com o banco de dados'
+              : form.invalid
+                ? 'Preencha todos os campos obrigatórios'
+                : rotuloBotao()
+          "
+        >
+          @if (salvando) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Salvando...
+          } @else {
+            <i class="bi bi-check-lg me-1"></i>{{ rotuloBotao() }}
+          }
+        </button>
+      </footer>
+    </form>
+  </aside>
+}

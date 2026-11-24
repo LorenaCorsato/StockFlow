@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import StockMovementModal, {
@@ -5,6 +6,7 @@ import StockMovementModal, {
 } from "../components/StockMovementModal";
 
 export default function DetailsScreen() {
+  const { id } = useLocalSearchParams<{ id?: string }>();
   const [modalVisible, setModalVisible] = useState(false);
   const [productQuantity, setProductQuantity] = useState(10);
   const [successMessage, setSuccessMessage] = useState("");
@@ -30,6 +32,12 @@ export default function DetailsScreen() {
 
       <View style={styles.content}>
         <View style={styles.detailsCard}>
+          {id ? (
+            <View style={styles.detailField}>
+              <Text style={styles.label}>ID</Text>
+              <Text style={styles.value}>{id}</Text>
+            </View>
+          ) : null}
           <View style={styles.detailField}>
             <Text style={styles.label}>Nome</Text>
             <Text style={styles.value}>Caderno universitário</Text>
