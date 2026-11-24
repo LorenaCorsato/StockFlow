@@ -1,5 +1,5 @@
 <div class="container py-4">
-  <!-- Título + quantidade + botão novo (visual) -->
+  <!-- Título + quantidade + ações (visual) -->
   <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
       <h1 class="h3 mb-1">{{ titulo }}</h1>
@@ -8,29 +8,54 @@
         <span class="ms-2 small">Total cadastrado: {{ produtos().length }}</span>
       </p>
     </div>
-    <button class="btn btn-success">+ Novo produto</button>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary" (click)="carregar()" [disabled]="carregando()">
+        <i class="bi bi-arrow-clockwise me-1" [class.spin]="carregando()"></i>
+        Atualizar estoque
+      </button>
+      <button class="btn btn-success">
+        <i class="bi bi-plus-lg me-1"></i>
+        Novo produto
+      </button>
+    </div>
   </header>
 
-  <!-- Searchbar -->
-  <div class="input-group mb-3">
-    <span class="input-group-text">🔍</span>
-    <input
-      type="search"
-      class="form-control"
-      placeholder="Buscar por nome ou categoria..."
-      [ngModel]="busca()"
-      (ngModelChange)="busca.set($event)"
-    />
-    @if (busca()) {
-      <button class="btn btn-outline-secondary" (click)="limparBusca()">Limpar</button>
-    }
+  <!-- Searchbar + filtro de estoque -->
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <div class="input-group flex-grow-1" style="min-width: 240px;">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input
+        type="search"
+        class="form-control"
+        placeholder="Buscar por nome ou categoria..."
+        [ngModel]="busca()"
+        (ngModelChange)="busca.set($event)"
+      />
+      @if (busca()) {
+        <button class="btn btn-outline-secondary" (click)="limparBusca()">
+          <i class="bi bi-x-lg me-1"></i>Limpar
+        </button>
+      }
+    </div>
+    <select
+      class="form-select w-auto"
+      aria-label="Filtrar por estoque"
+      [ngModel]="filtroEstoque()"
+      (ngModelChange)="filtroEstoque.set($event)"
+    >
+      <option value="todos">Todos</option>
+      <option value="normal">Estoque normal</option>
+      <option value="baixo">Estoque baixo</option>
+    </select>
   </div>
 
   <!-- Erro / loading -->
   @if (erro()) {
     <div class="alert alert-danger d-flex justify-content-between align-items-center">
       <span>{{ erro() }}</span>
-      <button class="btn btn-sm btn-outline-danger" (click)="carregar()">Tentar novamente</button>
+      <button class="btn btn-sm btn-outline-danger" (click)="carregar()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Tentar novamente
+      </button>
     </div>
   }
 
@@ -50,25 +75,41 @@
             <th>Categoria</th>
             <th>Qtd.</th>
             <th>Preço</th>
+            <th>Status</th>
             <th class="text-end">Ações</th>
           </tr>
         </thead>
         <tbody>
           @for (p of produtosFiltrados(); track p.id) {
-            <tr>
+            <tr [class.linha-estoque-baixo]="estoqueBaixo(p)">
               <td>{{ p.id }}</td>
               <td class="fw-semibold">{{ p.nome }}</td>
               <td>{{ p.categoria }}</td>
               <td>{{ p.quantidade }}</td>
               <td>{{ p.preco != null ? (p.preco | currency:'BRL':'symbol':'1.2-2') : '—' }}</td>
+              <td>
+                @if (estoqueBaixo(p)) {
+                  <span class="badge text-bg-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>Estoque Baixo
+                  </span>
+                } @else {
+                  <span class="badge text-bg-success">
+                    <i class="bi bi-check-circle-fill me-1"></i>OK
+                  </span>
+                }
+              </td>
               <td class="text-end text-nowrap">
-                <button class="btn btn-sm btn-outline-primary me-2">Editar</button>
-                <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                <button class="btn btn-sm btn-outline-primary me-2">
+                  <i class="bi bi-pencil me-1"></i>Editar
+                </button>
+                <button class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash me-1"></i>Excluir
+                </button>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="text-center text-muted py-4">
+              <td colspan="7" class="text-center text-muted py-4">
                 Nenhum produto encontrado.
               </td>
             </tr>

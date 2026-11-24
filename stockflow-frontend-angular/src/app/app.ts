@@ -17,16 +17,23 @@ export class App implements OnInit {
   carregando = signal(false);
   erro = signal<string | null>(null);
   busca = signal('');
+  filtroEstoque = signal<'todos' | 'normal' | 'baixo'>('todos');
 
   produtosFiltrados = computed(() => {
     const termo = this.busca().trim().toLowerCase();
-    const lista = this.produtos();
-    if (!termo) return lista;
-    return lista.filter(
-      (p) =>
+    const filtro = this.filtroEstoque();
+    return this.produtos().filter((p) => {
+      const passaBusca =
+        !termo ||
         p.nome.toLowerCase().includes(termo) ||
-        p.categoria.toLowerCase().includes(termo),
-    );
+        p.categoria.toLowerCase().includes(termo);
+      const baixo = this.estoqueBaixo(p);
+      const passaFiltro =
+        filtro === 'todos' ||
+        (filtro === 'baixo' && baixo) ||
+        (filtro === 'normal' && !baixo);
+      return passaBusca && passaFiltro;
+    });
   });
 
   constructor(private produtoService: ProdutoService) {}
@@ -54,5 +61,9 @@ export class App implements OnInit {
 
   limparBusca(): void {
     this.busca.set('');
+  }
+
+  estoqueBaixo(p: Produto): boolean {
+    return p.quantidade <= p.estoqueMinimo;
   }
 }
