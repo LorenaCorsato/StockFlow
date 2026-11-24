@@ -1,9 +1,32 @@
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import StockMovementModal, {
+  StockMovementType,
+} from "../components/StockMovementModal";
 
 export default function DetailsScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [productQuantity, setProductQuantity] = useState(10);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  function handleSaveMovement(type: StockMovementType, amount: number) {
+    setProductQuantity((currentQuantity) =>
+      type === "ENTRADA"
+        ? currentQuantity + amount
+        : currentQuantity - amount,
+    );
+    setSuccessMessage("Movimentação de estoque salva com sucesso.");
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Detalhes do produto</Text>
+
+      {successMessage ? (
+        <Text accessibilityRole="status" style={styles.successMessage}>
+          {successMessage}
+        </Text>
+      ) : null}
 
       <View style={styles.content}>
         <View style={styles.detailsCard}>
@@ -23,7 +46,7 @@ export default function DetailsScreen() {
           </View>
           <View style={styles.detailField}>
             <Text style={styles.label}>Quantidade</Text>
-            <Text style={styles.value}>10 unidades</Text>
+            <Text style={styles.value}>{productQuantity} unidades</Text>
           </View>
           <View style={styles.detailField}>
             <Text style={styles.label}>Estoque mínimo</Text>
@@ -31,10 +54,23 @@ export default function DetailsScreen() {
           </View>
         </View>
 
-        <Pressable style={styles.button}>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            setSuccessMessage("");
+            setModalVisible(true);
+          }}
+        >
           <Text style={styles.buttonText}>Estoque</Text>
         </Pressable>
       </View>
+
+      <StockMovementModal
+        visible={modalVisible}
+        currentStock={productQuantity}
+        onClose={() => setModalVisible(false)}
+        onSave={handleSaveMovement}
+      />
     </View>
   );
 }
@@ -73,6 +109,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 12,
     textAlign: "left",
+  },
+  successMessage: {
+    backgroundColor: "#dcfce7",
+    borderRadius: 8,
+    color: "#166534",
+    fontSize: 14,
+    marginBottom: 12,
+    padding: 12,
   },
   button: {
     backgroundColor: "#2563eb",

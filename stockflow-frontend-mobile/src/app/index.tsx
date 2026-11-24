@@ -11,7 +11,7 @@ export default function TelaA() {
       </Pressable>
 
       <Pressable style={styles.button} onPress={() => router.push("/telaC")}>
-        <Text style={styles.buttonText}>Estoque</Text>
+        <Text style={styles.buttonText}>Tela C</Text>
       </Pressable>
     </View>
   );
