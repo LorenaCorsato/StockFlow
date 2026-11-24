@@ -1,40 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { Produto } from '../../models/produto';
-
-/** Aceita vazio (opcional) ou valor monetário pt-BR ≥ 0 (ex.: "1.234,56"). */
-function validadorPrecoBr(control: AbstractControl): ValidationErrors | null {
-  const v = control.value;
-  if (v === null || v === undefined || String(v).trim() === '') return null;
-  const n = conversorPrecoBr(String(v));
-  return n === null || n < 0 ? { precoInvalido: true } : null;
-}
-
-/** Converte "1.234,56" / "1234,56" / "12.5" em number; null se inválido. */
-function conversorPrecoBr(texto: string): number | null {
-  const t = texto.trim();
-  if (!t) return null;
-  const limpo = t.replace(/[^\d.,-]/g, '');
-  if (!limpo || /-/.test(limpo)) return null;
-  const semMilhar = limpo.replace(/\./g, '');
-  const normalizado = semMilhar.replace(',', '.');
-  if (!/^\d+(\.\d{1,2})?$/.test(normalizado)) return null;
-  const n = Number(normalizado);
-  return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
-}
-
-/** Formata number para "1.234,56". */
-function formatarPrecoBr(valor: number): string {
-  return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 /**
  * Diálogo lateral (drawer) para adicionar e editar produtos.
@@ -79,7 +51,6 @@ export class ProdutoDialog implements OnChanges {
       categoria: ['', [Validators.required, Validators.maxLength(80)]],
       quantidade: [null as number | null, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
       estoqueMinimo: [null as number | null, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
-      preco: [null as string | null, [validadorPrecoBr]],
     });
   }
 
@@ -90,7 +61,6 @@ export class ProdutoDialog implements OnChanges {
       categoria: this.produto?.categoria ?? '',
       quantidade: this.produto?.quantidade ?? null,
       estoqueMinimo: this.produto?.estoqueMinimo ?? null,
-      preco: this.produto?.preco != null ? formatarPrecoBr(this.produto.preco) : null,
     });
   }
 
@@ -111,38 +81,14 @@ export class ProdutoDialog implements OnChanges {
       return;
     }
     const v = this.form.value;
-    const precoConvertido =
-      v.preco === null || v.preco === undefined || String(v.preco).trim() === ''
-        ? null
-        : conversorPrecoBr(String(v.preco));
     const payload: Produto = {
       ...(this.produto?.id != null ? { id: this.produto.id } : {}),
       nome: String(v.nome).trim(),
       categoria: String(v.categoria).trim(),
       quantidade: Number(v.quantidade),
       estoqueMinimo: Number(v.estoqueMinimo),
-      ...(precoConvertido !== null ? { preco: precoConvertido } : {}),
     };
     this.salvar.emit(payload);
-  }
-
-  /**
-   * Máscara de moeda pt-BR aplicada a cada tecla: só dígitos entram,
-   * os centavos avançam (ex.: digita "1234" → "12,34") com milhar e "R$".
-   */
-  aoDigitarPreco(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const digitos = input.value.replace(/\D/g, '').slice(0, 12);
-    if (!digitos) {
-      this.form.get('preco')?.setValue(null, { emitEvent: false });
-      input.value = '';
-      return;
-    }
-    const numero = parseInt(digitos, 10) / 100;
-    const mascara = formatarPrecoBr(numero);
-    this.form.get('preco')?.setValue(mascara, { emitEvent: false });
-    this.form.get('preco')?.markAsDirty();
-    input.value = mascara;
   }
 
   aoFechar(): void {

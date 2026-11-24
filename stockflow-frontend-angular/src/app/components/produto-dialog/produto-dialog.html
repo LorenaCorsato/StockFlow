@@ -120,27 +120,6 @@
         </div>
       </div>
 
-      <div>
-        <label class="form-label" for="pd-preco">Preço (opcional)</label>
-        <div class="input-group">
-          <span class="input-group-text">R$</span>
-          <input
-            id="pd-preco"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            class="form-control"
-            formControlName="preco"
-            placeholder="00,00"
-            (input)="aoDigitarPreco($event)"
-            [class.is-invalid]="campoInvalido('preco')"
-          />
-        </div>
-        @if (campoInvalido('preco')) {
-          <div class="invalid-feedback d-block">Informe um valor válido ≥ R$ 00,00.</div>
-        }
-      </div>
-
       <footer class="drawer-footer">
         <button
           type="button"

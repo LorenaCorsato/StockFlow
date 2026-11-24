@@ -75,7 +75,6 @@
             <th>Nome</th>
             <th>Categoria</th>
             <th>Qtd.</th>
-            <th>Preço</th>
             <th>Status</th>
             <th class="text-end">Ações</th>
           </tr>
@@ -87,7 +86,6 @@
               <td class="fw-semibold">{{ p.nome }}</td>
               <td>{{ p.categoria }}</td>
               <td>{{ p.quantidade }}</td>
-              <td>{{ p.preco != null ? (p.preco | currency:'BRL':'symbol':'1.2-2') : '—' }}</td>
               <td>
                 @if (estoqueBaixo(p)) {
                   <span class="badge text-bg-danger">
@@ -110,7 +108,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="7" class="text-center text-muted py-4">
+              <td colspan="6" class="text-center text-muted py-4">
                 Nenhum produto encontrado.
               </td>
             </tr>
