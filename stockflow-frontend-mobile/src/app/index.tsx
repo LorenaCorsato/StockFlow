@@ -6,12 +6,12 @@ export default function TelaA() {
     <View style={styles.container}>
       <Text style={styles.title}>Tela A</Text>
 
-      <Pressable style={styles.button} onPress={() => router.push("/telaB")}>
-        <Text style={styles.buttonText}>Ir para Tela B</Text>
+      <Pressable style={styles.button} onPress={() => router.push("/detailsScreen")}>
+        <Text style={styles.buttonText}>Ir para Detalhes</Text>
       </Pressable>
 
       <Pressable style={styles.button} onPress={() => router.push("/telaC")}>
-        <Text style={styles.buttonText}>Ir para Tela C</Text>
+        <Text style={styles.buttonText}>Estoque</Text>
       </Pressable>
     </View>
   );
