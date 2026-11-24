@@ -8,46 +8,8 @@ import {
   View,
 } from "react-native";
 import { ProductCard } from "./components/productCard";
-
-type Product = {
-  id: number;
-  nome: string;
-  categoria: string;
-  quantidade: number;
-  estoqueMinimo: number;
-};
-
-// TODO: Substituir pelos dados reais da API quando o backend estiver disponível
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    nome: "Caderno Universitário",
-    categoria: "Papelaria",
-    quantidade: 10,
-    estoqueMinimo: 3,
-  },
-  {
-    id: 2,
-    nome: "Caneta Esferográfica Azul",
-    categoria: "Papelaria",
-    quantidade: 2,
-    estoqueMinimo: 5,
-  },
-  {
-    id: 3,
-    nome: "Teclado Mecânico",
-    categoria: "Eletrônicos",
-    quantidade: 7,
-    estoqueMinimo: 2,
-  },
-  {
-    id: 4,
-    nome: "Mouse Sem Fio",
-    categoria: "Eletrônicos",
-    quantidade: 1,
-    estoqueMinimo: 4,
-  },
-];
+import { Product } from "./models/product";
+import { getProducts } from "./services/productService";
 
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -64,9 +26,8 @@ export default function ProductList() {
     setError(null);
 
     try {
-      // TODO: Substituir pela chamada real à API (ex: fetchProdutos())
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      setProducts(MOCK_PRODUCTS);
+      const data = await getProducts();
+      setProducts(data);
     } catch {
       setError("Não foi possível carregar os produtos. Tente novamente.");
     } finally {
@@ -79,9 +40,26 @@ export default function ProductList() {
     loadProducts();
   }, [loadProducts]);
 
+  const isBusy = isLoading || refreshing;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lista de Produtos</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Lista de Produtos</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.refreshButton,
+            isBusy && styles.refreshButtonDisabled,
+            pressed && !isBusy && styles.refreshButtonPressed,
+          ]}
+          onPress={() => loadProducts(products.length > 0)}
+          disabled={isBusy}
+        >
+          <Text style={styles.refreshButtonText}>
+            {refreshing ? "Atualizando..." : "Atualizar"}
+          </Text>
+        </Pressable>
+      </View>
 
       {isLoading ? (
         <View style={styles.centerState}>
@@ -112,9 +90,9 @@ export default function ProductList() {
           }
           renderItem={({ item }) => (
             <ProductCard
-              nome={item.nome}
-              categoria={item.categoria}
-              quantidade={item.quantidade}
+              nome={item.name}
+              categoria={item.category}
+              quantidade={item.quantity}
             />
           )}
         />
@@ -129,11 +107,35 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#F9FAFB",
   },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    marginBottom: 16,
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 16,
     color: "#111827",
+    flexShrink: 1,
+  },
+  refreshButton: {
+    backgroundColor: "#2563EB",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+  refreshButtonDisabled: {
+    opacity: 0.6,
+  },
+  refreshButtonPressed: {
+    opacity: 0.85,
+  },
+  refreshButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
   },
   listContent: {
     gap: 12,
