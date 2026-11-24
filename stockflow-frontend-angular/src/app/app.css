@@ -1,0 +1,16 @@
+/* Linha com estoque baixo: fundo vermelho claro */
+.linha-estoque-baixo {
+  --bs-table-bg: #f8d7da;
+  --bs-table-hover-bg: #f5c2c7;
+  background-color: #f8d7da;
+}
+
+/* Gira o ícone de atualizar enquanto carrega */
+.spin {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

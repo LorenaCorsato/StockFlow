@@ -1,0 +1,44 @@
+{
+  "produtos": [
+    {
+      "id": 1,
+      "nome": "Caderno",
+      "categoria": "Papelaria",
+      "quantidade": 10,
+      "estoqueMinimo": 3,
+      "preco": 25.9
+    },
+    {
+      "id": 2,
+      "nome": "Caneta Esferográfica Azul",
+      "categoria": "Papelaria",
+      "quantidade": 2,
+      "estoqueMinimo": 5,
+      "preco": 2.5
+    },
+    {
+      "id": 3,
+      "nome": "Teclado Mecânico RGB",
+      "categoria": "Periféricos",
+      "quantidade": 15,
+      "estoqueMinimo": 4,
+      "preco": 249.9
+    },
+    {
+      "id": 4,
+      "nome": "Mouse Sem Fio",
+      "categoria": "Periféricos",
+      "quantidade": 3,
+      "estoqueMinimo": 3,
+      "preco": 89.9
+    },
+    {
+      "id": 5,
+      "nome": "Monitor 24 Polegadas",
+      "categoria": "Eletrônicos",
+      "quantidade": 0,
+      "estoqueMinimo": 2,
+      "preco": 899
+    }
+  ]
+}
