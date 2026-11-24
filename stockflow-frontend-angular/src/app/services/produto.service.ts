@@ -34,9 +34,11 @@ export class ProdutoService {
   }
 
   atualizar(id: number, produto: Produto): Observable<Produto> {
+    // O backend responde 204 No Content (sem corpo) no PUT, então não há
+    // ProdutoBackend para mapear: devolve o payload com o id após o PUT.
     return this.http
-      .put<ProdutoBackend>(`${this.baseUrl}/${id}`, paraBackend(produto))
-      .pipe(map(paraProduto));
+      .put<void>(`${this.baseUrl}/${id}`, paraBackend(produto))
+      .pipe(map(() => ({ ...produto, id })));
   }
 
   excluir(id: number): Observable<void> {
