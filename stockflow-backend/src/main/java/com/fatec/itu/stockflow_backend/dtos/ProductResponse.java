@@ -7,6 +7,7 @@ public record ProductResponse(
     String description,
     String category,
     Integer quantity,
-    Integer minStock
+    Integer minStock,
+    boolean lowStock
 
 ) {}

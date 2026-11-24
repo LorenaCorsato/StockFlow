@@ -14,6 +14,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fatec.itu.stockflow_backend.dtos.ProductRequest;
 import com.fatec.itu.stockflow_backend.dtos.ProductResponse;
+import com.fatec.itu.stockflow_backend.dtos.StockMovementRequest;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,7 +27,7 @@ import jakarta.validation.Valid;
 
 @RestController 
 @CrossOrigin 
-@RequestMapping ("/api/products")
+@RequestMapping({"/api/produtos", "/api/products", "/products"})
 public class ProductController {
 
     @Autowired  
@@ -64,11 +66,16 @@ public class ProductController {
     }
 
      @PutMapping("{id}")
-    public ResponseEntity<Void> update(@PathVariable long id,
+    public ResponseEntity<ProductResponse> update(@PathVariable long id,
                                        @Valid @RequestBody ProductRequest product)
     {
-            service.update(product, id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(service.update(product, id));
+    }
+
+    @PatchMapping("/{id}/movement")
+    public ResponseEntity<ProductResponse> moveStock(@PathVariable Long id,
+            @Valid @RequestBody StockMovementRequest request) {
+        return ResponseEntity.ok(service.moveStock(id, request));
     }
     
 }
