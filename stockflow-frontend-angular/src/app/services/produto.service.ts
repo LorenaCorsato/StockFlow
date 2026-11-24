@@ -13,4 +13,16 @@ export class ProdutoService {
   listar(): Observable<Produto[]> {
     return this.http.get<Produto[]>(this.baseUrl);
   }
+
+  criar(produto: Produto): Observable<Produto> {
+    return this.http.post<Produto>(this.baseUrl, produto);
+  }
+
+  atualizar(id: number, produto: Produto): Observable<Produto> {
+    return this.http.put<Produto>(`${this.baseUrl}/${id}`, produto);
+  }
+
+  excluir(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }
