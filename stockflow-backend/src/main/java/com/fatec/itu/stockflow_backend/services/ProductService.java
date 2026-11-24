@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.fatec.itu.stockflow_backend.dtos.ProductRequest;
 import com.fatec.itu.stockflow_backend.dtos.ProductResponse;
+import com.fatec.itu.stockflow_backend.entities.Product;
 import com.fatec.itu.stockflow_backend.mappers.ProductMapper;
 import com.fatec.itu.stockflow_backend.repositories.ProductRepository;
 
@@ -27,6 +28,11 @@ public class ProductService {
         return repository.findById(id)
                 .map(ProductMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException());
+    }
+
+    public ProductResponse save(ProductRequest request) {
+        Product product = repository.save(ProductMapper.toEntity(request));
+        return ProductMapper.toDTO(product);
     }
 
 }

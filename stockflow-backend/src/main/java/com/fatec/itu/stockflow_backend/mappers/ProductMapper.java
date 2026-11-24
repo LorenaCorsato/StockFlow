@@ -7,14 +7,14 @@ import com.fatec.itu.stockflow_backend.entities.Product;
 public class ProductMapper {
 
     public static Product toEntity(ProductRequest request) {
-        Product product = new Product();
-        product.setName(request.name());
-        product.setDescription(request.description());
-        product.setCategory(request.category());
-        product.setQuantity(request.quantity());
-        product.setMinStock(request.minStock());
+        Product p = new Product();
+        p.setName(request.name());
+        p.setDescription(request.description());
+        p.setCategory(request.category());
+        p.setQuantity(request.quantity());
+        p.setMinStock(request.minStock());
 
-        return product;
+        return p;
     }
 
     public static ProductResponse toDTO(Product product) {

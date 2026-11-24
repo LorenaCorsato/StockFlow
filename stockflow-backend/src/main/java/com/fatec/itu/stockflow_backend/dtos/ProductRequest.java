@@ -15,11 +15,11 @@ public record ProductRequest(
     String category,
 
     @NotNull(message = "Quantity is required")
-    @Min(value = 0, message = "Quantity must be greater than or equal to 0")
+    @Min(value = 1, message = "Quantity must be greater than or equal to 0")
     Integer quantity,
 
     @NotNull(message = "Minimum stock is required")
-    @Min(value = 0, message = "Minimum stock must be greater than or equal to 0")
+    @Min(value = 1, message = "Minimum stock must be greater than or equal to 0")
     Integer minStock
 
 ) {}
