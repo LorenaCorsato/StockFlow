@@ -57,6 +57,32 @@ Base URL padrão: `http://localhost:8080/api/produtos`
 
 ```
 
+O backend também aceita `/api/products` e `/products` para os clientes existentes.
+Os campos do produto continuam no formato `name`, `description`, `category`,
+`quantity` e `minStock`. O payload da movimentação usa `tipo` e `quantidade`,
+conforme o exemplo acima; `quantidade` deve ser um número JSON inteiro maior que zero.
+
+Uma movimentação bem-sucedida retorna `200 OK` com o produto atualizado:
+
+```json
+{
+  "id": 1,
+  "name": "Caderno",
+  "description": null,
+  "category": "Papelaria",
+  "quantity": 2,
+  "minStock": 3,
+  "lowStock": true
+}
+```
+
+`lowStock` é verdadeiro quando `quantity <= minStock` e pode ser usado pelos
+clientes para exibir o alerta **Estoque Baixo**. Uma saída superior ao saldo retorna
+`400 Bad Request`, com motivo `Estoque insuficiente`, sem alterar o banco.
+Um produto inexistente lança `EntityNotFoundException`, seguindo o padrão dos
+outros métodos do service, sem tratamento explícito de `404`. A movimentação é transacional e bloqueia
+o produto durante a atualização para evitar consumo duplicado do mesmo saldo.
+
 ## 🚀 Como Executar o Projeto Localmente
 
 ### Pré-requisitos

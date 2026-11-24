@@ -24,7 +24,8 @@ public class ProductMapper {
             product.getDescription(),
             product.getCategory(),
             product.getQuantity(),
-            product.getMinStock()
+            product.getMinStock(),
+            product.getQuantity() <= product.getMinStock()
         );
     }
 }
