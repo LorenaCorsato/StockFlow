@@ -43,4 +43,15 @@ public class ProductService {
            throw new EntityNotFoundException("Produto não cadastrado");
     }
 
+    public void update(ProductRequest request, Long id) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não cadastrado"));
+
+        product.setName(request.name());
+        product.setDescription(request.description());
+        product.setCategory(request.category());
+        product.setQuantity(request.quantity());
+        product.setMinStock(request.minStock());
+        repository.save(product);
+    }
 }
