@@ -168,10 +168,24 @@ export class App implements OnInit {
         this.produtos.update((lista) => lista.filter((item) => item.id !== id));
         this.mostrarToast(`"${nome}" removido do estoque.`, 'sucesso');
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.excluindo.set(false);
         this.modalExclusaoAberto.set(false);
-        this.mostrarToast('Não foi possível excluir o produto. Tente novamente.', 'erro');
+        if (err.status === 0) {
+          this.mostrarToast(
+            'Sem conexão com o backend (http://localhost:8080). Verifique se o Java está rodando e o `ng serve` com proxy.',
+            'erro',
+          );
+        } else if (err.status === 404) {
+          // Já foi excluído por outro cliente: sincroniza a lista.
+          this.produtos.update((lista) => lista.filter((item) => item.id !== id));
+          this.mostrarToast(`"${nome}" já não existe no servidor. Lista sincronizada.`, 'erro');
+        } else {
+          this.mostrarToast(
+            `Não foi possível excluir (HTTP ${err.status}). Tente novamente.`,
+            'erro',
+          );
+        }
       },
     });
   }
@@ -186,6 +200,12 @@ export class App implements OnInit {
 
   /** Extrai mensagem de validação do backend (400) para exibir no diálogo. */
   private mensagemErroCadastro(err: HttpErrorResponse): string {
+    if (err.status === 0) {
+      return 'Sem conexão com o backend (http://localhost:8080). Verifique se o Java está rodando e reinicie o Angular com o proxy (`ng serve`).';
+    }
+    if (err.status === 404) {
+      return 'Produto não encontrado no servidor (HTTP 404). Ele pode ter sido excluído — recarregue a lista.';
+    }
     if (err.status === 400) {
       const corpo = err.error as unknown;
       if (typeof corpo === 'string' && corpo.trim()) return corpo;
@@ -211,6 +231,9 @@ export class App implements OnInit {
         }
       }
       return 'Dados inválidos. Confira nome, categoria e valores (quantidade/estoque ≥ 0).';
+    }
+    if (err.status >= 500) {
+      return `O servidor falhou (HTTP ${err.status}). Se o backend não estiver rodando, o proxy do \`ng serve\` devolve 500 para /api — suba o Java em http://localhost:8080 e tente de novo.`;
     }
     return 'Não foi possível salvar. Verifique a conexão com o banco de dados e tente de novo.';
   }
