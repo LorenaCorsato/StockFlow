@@ -6,9 +6,7 @@ export default function TelaB() {
     <View style={styles.container}>
       <Text style={styles.title}>Tela B</Text>
 
-      <Pressable style={styles.button} onPress={() => router.push("/telaC")}>
-        <Text style={styles.buttonText}>Ir para Tela C</Text>
-      </Pressable>
+
 
       <Pressable
         style={[styles.button, styles.secondaryButton]}
