@@ -1,13 +1,13 @@
-package com.fatec.itu.stockflow;
+package com.fatec.itu.stockflow_backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StockflowApplication {
+public class StockflowBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StockflowApplication.class, args);
+		SpringApplication.run(StockflowBackendApplication.class, args);
 	}
 
 }

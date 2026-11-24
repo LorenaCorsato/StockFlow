@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.fatec.itu</groupId>
-	<artifactId>stockflow</artifactId>
+	<artifactId>stockflow-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>stockflow</name>
+	<name>stockflow-backend</name>
 	<description/>
 	<url/>
 	<licenses>

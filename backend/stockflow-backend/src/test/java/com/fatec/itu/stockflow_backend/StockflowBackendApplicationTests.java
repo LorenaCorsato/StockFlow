@@ -1,10 +1,10 @@
-package com.fatec.itu.stockflow;
+package com.fatec.itu.stockflow_backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class StockflowApplicationTests {
+class StockflowBackendApplicationTests {
 
 	@Test
 	void contextLoads() {
