@@ -35,4 +35,12 @@ public class ProductService {
         return ProductMapper.toDTO(product);
     }
 
+    
+    public void deleteById(long id) {
+      if(repository.existsById(id))
+            repository.deleteById(id);
+        else
+           throw new EntityNotFoundException("Produto não cadastrado");
+    }
+
 }
