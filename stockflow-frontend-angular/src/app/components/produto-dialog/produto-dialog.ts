@@ -48,6 +48,7 @@ export class ProdutoDialog implements OnChanges {
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.maxLength(120)]],
+      descricao: ['', [Validators.maxLength(500)]],
       categoria: ['', [Validators.required, Validators.maxLength(80)]],
       quantidade: [null as number | null, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
       estoqueMinimo: [null as number | null, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]],
@@ -58,6 +59,7 @@ export class ProdutoDialog implements OnChanges {
     this.tentativaEnvio.set(false);
     this.form.reset({
       nome: this.produto?.nome ?? '',
+      descricao: this.produto?.descricao ?? '',
       categoria: this.produto?.categoria ?? '',
       quantidade: this.produto?.quantidade ?? null,
       estoqueMinimo: this.produto?.estoqueMinimo ?? null,
@@ -81,9 +83,11 @@ export class ProdutoDialog implements OnChanges {
       return;
     }
     const v = this.form.value;
+    const descricao = String(v.descricao ?? '').trim();
     const payload: Produto = {
       ...(this.produto?.id != null ? { id: this.produto.id } : {}),
       nome: String(v.nome).trim(),
+      descricao: descricao ? descricao : null,
       categoria: String(v.categoria).trim(),
       quantidade: Number(v.quantidade),
       estoqueMinimo: Number(v.estoqueMinimo),

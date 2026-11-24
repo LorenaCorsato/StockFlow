@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Produto } from './models/produto';
 import { ProdutoService } from './services/produto.service';
 import { ProdutoDialog } from './components/produto-dialog/produto-dialog';
@@ -73,7 +74,7 @@ export class App implements OnInit {
       },
       error: () => {
         this.erro.set(
-          'Não foi possível carregar os produtos. Verifique se o backend Java está rodando (http://localhost:8080/products).',
+          'Não foi possível carregar os produtos. Verifique se o backend Java está rodando (http://localhost:8080) e reinicie o Angular com o proxy (`ng serve`).',
         );
         this.carregando.set(false);
       },
@@ -122,17 +123,21 @@ export class App implements OnInit {
         : this.produtoService.criar(payload);
 
     req$.subscribe({
-      next: () => {
+      next: (salvo) => {
         this.salvandoDialogo.set(false);
         this.dialogoAberto.set(false);
         this.produtoEmEdicao.set(null);
+        this.mostrarToast(
+          editando?.id != null
+            ? `"${salvo.nome}" atualizado com sucesso.`
+            : `"${salvo.nome}" cadastrado com sucesso.`,
+          'sucesso',
+        );
         this.carregar();
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.salvandoDialogo.set(false);
-        this.erroDialogo.set(
-          'Não foi possível salvar. Verifique a conexão com o banco de dados e tente de novo.',
-        );
+        this.erroDialogo.set(this.mensagemErroCadastro(err));
       },
     });
   }
@@ -177,6 +182,37 @@ export class App implements OnInit {
       clearTimeout(this.toastTimer);
       this.toastTimer = null;
     }
+  }
+
+  /** Extrai mensagem de validação do backend (400) para exibir no diálogo. */
+  private mensagemErroCadastro(err: HttpErrorResponse): string {
+    if (err.status === 400) {
+      const corpo = err.error as unknown;
+      if (typeof corpo === 'string' && corpo.trim()) return corpo;
+      if (corpo && typeof corpo === 'object') {
+        const msg = (corpo as { message?: unknown }).message;
+        if (typeof msg === 'string' && msg.trim()) return msg;
+        const errors = (corpo as { errors?: unknown }).errors;
+        if (Array.isArray(errors)) {
+          const textos = errors
+            .map((e) =>
+              typeof e === 'string'
+                ? e
+                : e && typeof e === 'object'
+                  ? String(
+                      (e as { defaultMessage?: unknown; message?: unknown }).defaultMessage ??
+                        (e as { message?: unknown }).message ??
+                        '',
+                    )
+                  : '',
+            )
+            .filter((t) => t.trim());
+          if (textos.length) return textos.join(' ');
+        }
+      }
+      return 'Dados inválidos. Confira nome, categoria e valores (quantidade/estoque ≥ 0).';
+    }
+    return 'Não foi possível salvar. Verifique a conexão com o banco de dados e tente de novo.';
   }
 
   private mostrarToast(mensagem: string, tipo: ToastTipo): void {
