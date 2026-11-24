@@ -13,7 +13,8 @@
         <i class="bi bi-arrow-clockwise me-1" [class.spin]="carregando()"></i>
         Atualizar estoque
       </button>
-      <button class="btn btn-success">
+      <button class="btn btn-success" (click)="abrirNovo()" [disabled]="apiIndisponivel()"
+        [title]="apiIndisponivel() ? 'Bloqueado: sem conexão com o banco de dados' : 'Novo produto'">
         <i class="bi bi-plus-lg me-1"></i>
         Novo produto
       </button>
@@ -99,10 +100,10 @@
                 }
               </td>
               <td class="text-end text-nowrap">
-                <button class="btn btn-sm btn-outline-primary me-2">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="abrirEdicao(p)">
                   <i class="bi bi-pencil me-1"></i>Editar
                 </button>
-                <button class="btn btn-sm btn-outline-danger">
+                <button class="btn btn-sm btn-outline-danger" (click)="excluir(p)">
                   <i class="bi bi-trash me-1"></i>Excluir
                 </button>
               </td>
@@ -119,3 +120,13 @@
     </div>
   }
 </div>
+
+<app-produto-dialog
+  [aberto]="dialogoAberto()"
+  [produto]="produtoEmEdicao()"
+  [salvando]="salvandoDialogo()"
+  [apiIndisponivel]="apiIndisponivel()"
+  [erroServidor]="erroDialogo()"
+  (fechar)="fecharDialogo()"
+  (salvar)="salvarDialogo($event)"
+/>
