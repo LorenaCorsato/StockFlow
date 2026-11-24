@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fatec.itu.stockflow_backend.dtos.ProductResponse;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.fatec.itu.stockflow_backend.services.ProductService;
 
@@ -23,7 +24,12 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAll() {
-        return ResponseEntity.ok(service.findAll()); // Devolve uma LISTA de produto
-    }             
+        return ResponseEntity.ok(service.findAll()); 
+    }            
+    
+    @GetMapping("{id}")
+    public ResponseEntity<ProductResponse> getById(@PathVariable long id){ 
+        return ResponseEntity.ok(service.findById(id));
+    }
     
 }

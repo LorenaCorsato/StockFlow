@@ -22,4 +22,11 @@ public class ProductService {
                 .map(ProductMapper::toDTO)
                 .toList();
     }
+
+    public ProductResponse findById(Long id) {
+        return repository.findById(id)
+                .map(ProductMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException());
+    }
+
 }
