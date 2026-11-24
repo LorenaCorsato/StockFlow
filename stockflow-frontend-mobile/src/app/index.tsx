@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -93,6 +94,12 @@ export default function ProductList() {
               nome={item.name}
               categoria={item.category}
               quantidade={item.quantity}
+              onPress={() =>
+                router.push({
+                  pathname: "/detailsScreen",
+                  params: { id: String(item.id) },
+                })
+              }
             />
           )}
         />
